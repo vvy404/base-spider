@@ -132,8 +132,8 @@ export default function Main() {
   },[] )
   
   return (
-    <div>
-      <ReactECharts option={option} style={{height: '500px'}}/>
+    <div className='bg-white'>
+      <ReactECharts option={option} style={{height: '700px'}}/>
     </div>
   );
 }
