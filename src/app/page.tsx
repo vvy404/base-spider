@@ -1,113 +1,139 @@
-import Image from "next/image";
+"use client"
+
+import React from 'react';
+import ReactECharts from 'echarts-for-react';
+
+import { useState, useEffect } from 'react';
+import { getData } from '@/apis/getData';
 
 export default function Home() {
+  let optionDefault = {
+    title: {
+      text: 'Stacked Line'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+      data: [] as any
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: [] as any
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      // {
+      //   name: 'Email',
+      //   type: 'line',
+      //   stack: 'Total',
+      //   data: [120, 132, 101, 134, 90, 230, 210]
+      // },
+      // {
+      //   name: 'Union Ads',
+      //   type: 'line',
+      //   stack: 'Total',
+      //   data: [220, 182, 191, 234, 290, 330, 310]
+      // },
+      // {
+      //   name: 'Video Ads',
+      //   type: 'line',
+      //   stack: 'Total',
+      //   data: [150, 232, 201, 154, 190, 330, 410]
+      // },
+      // {
+      //   name: 'Direct',
+      //   type: 'line',
+      //   stack: 'Total',
+      //   data: [320, 332, 301, 334, 390, 330, 320]
+      // },
+      // {
+      //   name: 'Search Engine',
+      //   type: 'line',
+      //   stack: 'Total',
+      //   data: [820, 932, 901, 934, 1290, 1330, 1320]
+      // }
+    ] as any
+  };
+
+  const [option, setOption] = useState(optionDefault)
+
+  const formatTime = (date: Date) => {
+    let d = new Date(date);
+
+    let str = '';
+    str = [d.getMonth()+1,
+      d.getDate()].join('/')+' '+
+     [d.getHours(),
+      d.getMinutes(),
+      d.getSeconds()].join(':');
+    return str;
+  }
+
+  const getPageData = async () => {
+    const res = await getData();
+    if(res && !res.code && res.data) {
+      console.log('getPageData', res.data);
+      const { name, time, ranklist} = res.data;
+      const option_copy = {
+        ...option,
+        legend: {
+          ...option.legend,
+          data: [] as any
+        },
+        xAxis: {
+          ...option.xAxis,
+          data: [] as any
+        },
+        series: [] as any
+      }
+      // option.legend.data = [];
+      name.forEach(i => {
+        option_copy.legend.data.push(i.name);
+      });
+      // option.xAxis.data = [];
+      time.forEach(i=> {
+        option_copy.xAxis.data.push(formatTime(i.create_time));
+      })
+      option.series = [];
+      ranklist.forEach(rank => {
+        let series_item = {
+          name: rank.name,
+          type: 'line',
+          // stack: 'Total',
+          data: rank.vote_num,
+        }
+        option_copy.series.push(series_item);
+      })
+      setOption(option_copy);
+      console.log(option)
+    }
+  }
+
+  useEffect(() => {
+    getPageData();
+  },[])
+  
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <main className="bg-white">
+            <ReactECharts option={option} style={{height: '700px'}}/>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth infddormation about Next.js features and API.33
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
     </main>
   );
 }
