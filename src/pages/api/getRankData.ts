@@ -40,7 +40,7 @@ export default async function handler(
         item.vote_num.push(ranks[j].vote_num)
       }
     }
-    item.vote_num.sort();
+    item.vote_num.sort((a: number, b: number) => (a-b));
     final_data.push(item);
   }
   
