@@ -1,0 +1,27 @@
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "email" TEXT NOT NULL,
+    "name" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "Rank" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "ranking" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "wb_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "cover" TEXT NOT NULL,
+    "desc" TEXT NOT NULL,
+    "desc2" TEXT NOT NULL,
+    "detail_url" TEXT NOT NULL,
+    "vote_button_below_text" TEXT NOT NULL,
+    "vote_num" INTEGER NOT NULL,
+    "share_vote_show_text" TEXT NOT NULL,
+    "create_time" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
