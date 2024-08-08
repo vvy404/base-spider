@@ -208,3 +208,7 @@ export interface OriginRankType {
   share_vote_show_text: string;
 }
 
+export interface RankResType {
+  name: string;
+  vote_num: number[];
+}
